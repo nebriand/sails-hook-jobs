@@ -78,8 +78,7 @@ module.exports = function(sails) {
           optional    : true
       });
 
-      // init jobs
-      hook.initJobs(jobs);
+
 
       // Lets wait on some of the sails core hooks to
       // finish loading before we load our hook
@@ -93,13 +92,19 @@ module.exports = function(sails) {
         eventsToWaitFor.push('hook:pubsub:loaded');
 
       sails.after(eventsToWaitFor, function(){
-        
+
 //        if (jobs.length > 0) {
-          // start agenda
-          agenda.start();
-          sails.log.verbose("sails jobs started")
+        // start agenda
+        agenda.start();
+        //agenda.emit('ready');
+        sails.log.verbose("sails jobs started")
 //        }
-        
+
+        agenda.on('ready',function(){
+          // init jobs
+          hook.initJobs(jobs);
+        })
+
         // Now we will return the callback and our hook
         // will be usable.
         return cb();
